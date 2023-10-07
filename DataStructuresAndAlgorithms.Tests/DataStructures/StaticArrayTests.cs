@@ -50,6 +50,18 @@ public class StaticArrayTests
     }
 
     [Fact]
+    public void Indexer_OutOfBoundsAfterRemovingElement_ThrowsOutOfBoundsException()
+    {
+        // Arrange
+        StaticArray<int> arr = new(1, 2, 3);
+        int index = arr.Length - 1;
+        // Act
+        arr.RemoveAt(index);
+        // Assert
+        Assert.Throws<IndexOutOfRangeException>(() => arr[index]);
+    }
+
+    [Fact]
     public void InsertAt_ValidIndex_InsertsCorrectly()
     {
         // Arrange

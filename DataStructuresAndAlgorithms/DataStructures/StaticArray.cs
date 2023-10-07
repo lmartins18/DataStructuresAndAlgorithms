@@ -6,7 +6,7 @@ namespace DataStructuresAndAlgorithms.DataStructures;
 /// </summary>
 public class StaticArray<T>
 {
-    private T[] _items;
+    private readonly T[] _items;
     public int Length { get; private set; }
 
     public StaticArray(params T[] items)
@@ -24,7 +24,11 @@ public class StaticArray<T>
     // Indexer
     public T this[int index]
     {
-        get => _items[index];
+        get
+        {
+            if (index > Length - 1) throw new IndexOutOfRangeException();
+            return _items[index];
+        }
         set => _items[index] = value;
     }
 
@@ -49,19 +53,19 @@ public class StaticArray<T>
 
         // And change it now.
         _items[index] = item;
-        
+
         // If array was already changed before, update Length.
         if (Length != _items.Length)
         {
             Length++;
         }
     }
-    
+
     public void RemoveAt(int index)
     {
         if (index > _items.Length)
             throw new IndexOutOfRangeException();
-        
+
         // Shift all first.
         for (int i = index; i < _items.Length - 1; i++)
         {
