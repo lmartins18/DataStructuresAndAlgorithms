@@ -74,5 +74,11 @@ public class StaticArray<T>
 
         // Now update count.
         Length--;
+
+        // Now clean the rest of the array.
+        for (int j = Length; j < _items.Length; j++)
+        {
+            _items[j] = default!;
+        }
     }
 }
