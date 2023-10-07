@@ -1,0 +1,14 @@
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/bin/Debug/net8.0/DataStructuresAndAlgorithms
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/bin/Debug/net8.0/DataStructuresAndAlgorithms.deps.json
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/bin/Debug/net8.0/DataStructuresAndAlgorithms.runtimeconfig.json
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/bin/Debug/net8.0/DataStructuresAndAlgorithms.dll
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/bin/Debug/net8.0/DataStructuresAndAlgorithms.pdb
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/obj/Debug/net8.0/DataStructuresAndAlgorithms.GeneratedMSBuildEditorConfig.editorconfig
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/obj/Debug/net8.0/DataStructuresAndAlgorithms.AssemblyInfoInputs.cache
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/obj/Debug/net8.0/DataStructuresAndAlgorithms.AssemblyInfo.cs
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/obj/Debug/net8.0/DataStructuresAndAlgorithms.csproj.CoreCompileInputs.cache
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/obj/Debug/net8.0/DataStructuresAndAlgorithms.dll
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/obj/Debug/net8.0/refint/DataStructuresAndAlgorithms.dll
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/obj/Debug/net8.0/DataStructuresAndAlgorithms.pdb
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/obj/Debug/net8.0/DataStructuresAndAlgorithms.genruntimeconfig.cache
+/Users/lmartins/Documents/Projects/DataStructuresAndAlgorithms/DataStructuresAndAlgorithms/obj/Debug/net8.0/ref/DataStructuresAndAlgorithms.dll
