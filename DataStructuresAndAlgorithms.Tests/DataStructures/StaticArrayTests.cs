@@ -50,36 +50,15 @@ public class StaticArrayTests
     }
 
     [Fact]
-    public void Add_NewItem_AddsAtEndCorrectly()
-    {
-        // Arrange
-        StaticArray<int> arr = new(1, 2, 3);
-        int item = 4;
-        // Act
-        arr.Add(item);
-        // Assert
-        Assert.Equal(item, arr[3]);
-    }
-
-    [Fact]
-    public void Add_NewItem_UpdatesLengthCorrectly()
-    {
-        // Arrange
-        StaticArray<int> arr = new(1, 2, 3);
-        // Act
-        arr.Add(4);
-        // Assert
-        Assert.True(arr.Length == 4);
-    }
-
-    [Fact]
     public void InsertAt_ValidIndex_InsertsCorrectly()
     {
         // Arrange
+        int index = 1;
+        int item = 10;
         StaticArray<int> actual = new(1, 2, 3);
-        StaticArray<int> expected = new(2, 1, 2, 3);
+        StaticArray<int> expected = new(1, 10, 2);
         // Act
-        actual.InsertAt(2, 0);
+        actual.InsertAt(item, index);
         // Assert
         for (int i = 0; i < expected.Length; i++)
         {
@@ -87,7 +66,7 @@ public class StaticArrayTests
             int actualIndex = actual[i];
 
             Assert.True(expectedIndex == actualIndex,
-                $"Expected: '{expected}', Actual: '{actual}' at offset {i}."
+                $"Expected: '{expectedIndex}', Actual: '{actualIndex}' at offset {i}."
             );
         }
     }

@@ -1,12 +1,25 @@
 namespace DataStructuresAndAlgorithms.DataStructures;
 
+/// <summary>
+/// <para>This is a class to implement a static array in C#.</para>
+/// <para>Following pure concepts, this can obviously lead to memory leaks and data loss when inserting/deleting.</para>
+/// </summary>
 public class StaticArray<T>
 {
     private T[] _items;
-    public int Length => _items.Length;
+    public int Length { get; private set; }
 
-    public StaticArray(params T[] items) => _items = items;
-    public StaticArray(int length) => _items = new T[length];
+    public StaticArray(params T[] items)
+    {
+        _items = items;
+        Length = _items.Length;
+    }
+
+    public StaticArray(int length)
+    {
+        _items = new T[length];
+        Length = _items.Length;
+    }
 
     // Indexer
     public T this[int index]
@@ -15,51 +28,47 @@ public class StaticArray<T>
         set => _items[index] = value;
     }
 
-    // Insert
-    public void Add(T item)
-    {
-        // Create a new array with current length + 1
-        T[] newArr = new T[_items.Length + 1];
-        // Add current items + new item;
-        newArr[^1] = item;
-        _items = newArr;
-    }
-
+    /// <summary>
+    /// <para>When inserting, all other elements will be shifted to the right.</para>
+    /// <para>This will cause all elements out of range to be lost.</para>
+    /// </summary>
     public void InsertAt(T item, int index)
     {
-        // Create a new array with current length + 1
-        T[] newArr = new T[_items.Length + 1];
-        // Loop array. Add until desired index is reached. 
-        for (int i = 0; i < index; i++)
+        // If inserting at end, change and leave.
+        if (index == _items.Length - 1)
         {
-            newArr[i] = _items[i];
+            _items[index] = item;
+            return;
         }
 
-        newArr[index] = item;
-
-        for (int j = index + 1; j < newArr.Length; j++)
+        // If not, first shift all.
+        for (int i = index; i < _items.Length - 1; i++)
         {
-            newArr[j] = _items[j - 1];
+            _items[i + 1] = _items[i];
         }
 
-        _items = newArr;
+        // And change it now.
+        _items[index] = item;
+        
+        // If array was already changed before, update Length.
+        if (Length != _items.Length)
+        {
+            Length++;
+        }
     }
-
-    // Remove
+    
     public void RemoveAt(int index)
     {
-        // New array to store existing values
-        T[] newArr = new T[_items.Length - 1];
-        // Loop till index.
-        for (int i = 0; i < index; i++)
+        if (index > _items.Length)
+            throw new IndexOutOfRangeException();
+        
+        // Shift all first.
+        for (int i = index; i < _items.Length - 1; i++)
         {
-            newArr[i] = _items[i];
-        }
-        for (int j = index; j < newArr.Length; j++)
-        {
-            newArr[j] = _items[j + 1];
+            _items[i] = _items[i + 1];
         }
 
-        _items = newArr;
+        // Now update count.
+        Length--;
     }
 }
