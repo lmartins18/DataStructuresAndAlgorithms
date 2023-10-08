@@ -63,7 +63,7 @@ public class StaticArray<T>
 
     public void RemoveAt(int index)
     {
-        if (index > _items.Length)
+        if (index >= _items.Length)
             throw new IndexOutOfRangeException();
 
         // Shift all first.
