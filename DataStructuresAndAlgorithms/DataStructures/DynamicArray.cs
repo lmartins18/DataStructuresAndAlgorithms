@@ -63,9 +63,9 @@ public class DynamicArray<T>
     public void RemoveAt(int index)
     {
         // New array to store existing values
-        // Set length to half if at least 20% free space.
-        int usedSpacePercentage = (Length / _items.Length) * 100;
-        T[] newArr = (usedSpacePercentage < 80) ? new T[_items.Length / 2] : new T[_items.Length];
+        // Set length to half if at least 20% free space and not removing last item.
+        double usedSpacePercentage = ((double)Length / _items.Length) * 100;
+        T[] newArr = (usedSpacePercentage < 50 && index > 0) ? new T[_items.Length / 2] : new T[_items.Length];
         // Loop till index.
         for (int i = 0; i < index; i++)
         {
