@@ -62,6 +62,7 @@ public class DynamicArray<T>
     // Remove
     public void RemoveAt(int index)
     {
+        if (index >= Length) throw new IndexOutOfRangeException();
         // New array to store existing values
         // Set length to half if at least 20% free space and not removing last item.
         double usedSpacePercentage = ((double)Length / _items.Length) * 100;
@@ -72,7 +73,7 @@ public class DynamicArray<T>
             newArr[i] = _items[i];
         }
         // Shift rest.
-        for (int j = index; j < _items.Length - 1; j++)
+        for (int j = index; j < newArr.Length - 1; j++)
         {
             newArr[j] = _items[j + 1];
         }
