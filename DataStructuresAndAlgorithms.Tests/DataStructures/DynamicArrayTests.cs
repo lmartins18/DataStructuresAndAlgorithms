@@ -2,163 +2,190 @@ namespace DataStructuresAndAlgorithms.Tests.DataStructures;
 
 public class DynamicArrayTests
 {
-    [Fact]
-    public void Constructor_WithParameters_InitializesItemsCorrectly()
+    // Data
+    public static IEnumerable<object[]> GetNumbers()
     {
-        // Arrange
-        DynamicArray<int> arr = new(1, 2, 3);
-        // Assert
-        Assert.Equal(1, arr[0]);
-        Assert.Equal(2, arr[1]);
-        Assert.Equal(3, arr[2]);
+        yield return new object[] { 1, 2, 3 };
+        yield return new object[] { 3, 2, 1 };
+        yield return new object[] { 1, 3, 2 };
+        yield return new object[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     }
 
-    [Fact]
-    public void Constructor_WithLength_InitializesWithRightLength()
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void Constructor_WithParameters_InitializesItemsCorrectly(params object[] items)
     {
         // Arrange
-        DynamicArray<int> arr = new(3);
+        DynamicArray<object> actual = new(items);
         // Assert
-        Assert.Equal(3, arr.Length);
+        for (int i = 0; i < items.Length; i++)
+        {
+            Assert.Equal(items[i], actual[i]);
+        }
     }
 
-    [Fact]
-    public void Length_AfterConstructor_SetsCorrectly()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(10)]
+    [InlineData(100)]
+    [InlineData(1000)]
+    public void Constructor_WithLength_InitializesWithRightLength(int length)
     {
         // Arrange
-        DynamicArray<int> arr = new(1, 2, 3);
+        DynamicArray<int> arr = new(length);
         // Assert
-        Assert.Equal(3, arr.Length);
+        Assert.Equal(length, arr.Length);
     }
 
-    [Fact]
-    public void Indexer_InBounds_WorksCorrectly()
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void Length_AfterConstructor_SetsCorrectly(params object[] items)
     {
         // Arrange
-        DynamicArray<int> arr = new(1, 2, 3);
+        DynamicArray<object> arr = new(items);
         // Assert
-        Assert.Equal(2, arr[1]);
+        Assert.Equal(items.Length, arr.Length);
     }
 
-    [Fact]
-    public void Indexer_OutOfBounds_ThrowsOutOfBoundsException()
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void Indexer_InBounds_WorksCorrectly(params object[] items)
     {
         // Arrange
-        DynamicArray<int> arr = new(1, 2, 3);
+        DynamicArray<object> arr = new(items);
+        int index = items.Length - 1;
         // Assert
-        Assert.Throws<IndexOutOfRangeException>(() => arr[4]);
+        Assert.Equal(items[index], arr[index]);
     }
 
-    [Fact]
-    public void Add_NewItem_AddsAtEndCorrectly()
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void Indexer_OutOfBounds_ThrowsOutOfBoundsException(params object[] items)
     {
         // Arrange
-        DynamicArray<int> arr = new(1, 2, 3);
-        int item = 4;
+        DynamicArray<object> arr = new(items);
+        // Assert
+        Assert.Throws<IndexOutOfRangeException>(() => arr[items.Length]);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void Add_NewItem_AddsAtEndCorrectly(params object[] items)
+    {
+        // Arrange
+        DynamicArray<object> arr = new(items);
+        object item = items[1];
         // Act
         arr.Add(item);
         // Assert
-        Assert.Equal(item, arr[3]);
+        Assert.Equal(item, arr[^1]);
     }
 
-    [Fact]
-    public void Add_NewItem_UpdatesLengthCorrectly()
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void Add_NewItem_UpdatesLengthCorrectly(params object[] items)
     {
         // Arrange
-        DynamicArray<int> arr = new(1, 2, 3);
+        DynamicArray<object> arr = new(items);
+        object item = items[1];
+        int initialLength = arr.Length;
+        int expectedLength = initialLength + 1;
         // Act
-        arr.Add(4);
+        arr.Add(item);
         // Assert
-        Assert.True(arr.Length == 4, $"Expected: 4, actual: {arr.Length}");
+        Assert.Equal(expectedLength, arr.Length);
     }
 
-    [Fact]
-    public void InsertAt_ValidIndex_InsertsCorrectly()
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void InsertAt_ValidIndex_InsertsCorrectly(params object[] items)
     {
-        // Arrange
-        DynamicArray<int> actual = new(1, 2, 3);
-        DynamicArray<int> expected = new(2, 1, 2, 3);
-        // Act
-        actual.InsertAt(2, 0);
-        // Assert
-        for (int i = 0; i < expected.Length; i++)
+        // Insert at start, middle and end.
+        int[] indexes = { 0, 1, items.Length - 1 };
+        foreach (var index in indexes)
         {
-            int expectedIndex = expected[i];
-            int actualIndex = actual[i];
+            // Arrange
+            object item = 10; // Item to insert
+            DynamicArray<object> actual = new(items);
+            List<object> expected = new(items);
 
-            Assert.True(expectedIndex == actualIndex,
-                $"Expected: '{expectedIndex}', Actual: '{actualIndex}' at offset {i}."
-            );
+            // Act
+            expected.Insert(index, item);
+            actual.InsertAt(item, index);
+
+            // Assert
+            for (int i = 0; i < expected.Count(); i++)
+            {
+                object expectedIndex = expected[i];
+                object actualIndex = actual[i];
+
+                Assert.True(expectedIndex == actualIndex,
+                    $"Expected: '{expectedIndex}', Actual: '{actualIndex}' at offset {i}."
+                );
+            }
         }
     }
+
 
     [Fact]
     public void InsertAt_InvalidIndex_ThrowsOutOfBoundsException()
     {
         // Arrange
-        DynamicArray<int> arr = new(1);
+        int length = 1;
+        DynamicArray<int> arr = new(length);
         // Assert
-        Assert.Throws<IndexOutOfRangeException>(() => arr.InsertAt(1, 2));
+        Assert.Throws<IndexOutOfRangeException>(() => arr.InsertAt(length, length + 1));
     }
 
-    [Fact]
-    public void RemoveAt_ValidIndex_SetsLengthCorrectly()
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void RemoveAt_ValidIndex_SetsLengthCorrectly(params object[] items)
     {
         // Arrange
-        DynamicArray<int> arr = new(1, 2, 3);
+        DynamicArray<object> arr = new(items);
         int initialLength = arr.Length;
+        int expectedLength = initialLength - 1;
         // Act
-        arr.RemoveAt(1);
+        arr.RemoveAt(expectedLength);
         // Assert
-        Assert.True(arr.Length == initialLength - 1);
+        Assert.Equal(expectedLength, arr.Length);
     }
 
-    [Fact]
-    public void RemoveAt_ValidIndex_RemovesItemSuccessfully()
-    {
-        // Arrange
-        DynamicArray<int> actual = new(1, 2, 3);
-        DynamicArray<int> expected = new(1, 3);
-        // Act
-        actual.RemoveAt(1);
-        // Assert
-        for (int i = 0; i < expected.Length; i++)
-        {
-            int expectedIndex = expected[i];
-            int actualIndex = actual[i];
 
-            Assert.True(expectedIndex == actualIndex,
-                $"Expected: '{expectedIndex}', Actual: '{actualIndex}' at offset {i}."
-            );
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void RemoveAt_ValidIndex_RemovesItemSuccessfully(params object[] items)
+    {
+        // Try at first, 'middle', and last indexes.
+        int[] indexes = { 0, 1, items.Length - 1 };
+        foreach (var index in indexes)
+        {
+            // Arrange
+            DynamicArray<object> actual = new(items);
+            DynamicArray<object> expected = new(items.Length - 1);
+
+            // Add all elements except the one that is going to be removed.
+            for (int i = 0, j = 0; i < items.Length; i++)
+            {
+                if (i != index)
+                {
+                    expected[j++] = items[i];
+                }
+            }
+
+            // Act
+            actual.RemoveAt(index);
+            Assert.Equivalent(expected, actual);
         }
     }
 
-    [Fact]
-    public void RemoveAt_InvalidIndex_ShouldThrowOutOfBoundsException()
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void RemoveAt_InvalidIndex_ShouldThrowOutOfBoundsException(params object[] items)
     {
         // Arrange
-        DynamicArray<int> arr = new(1);
+        DynamicArray<object> arr = new(items);
         // Act && Assert
-        Assert.Throws<IndexOutOfRangeException>(() => arr.RemoveAt(2));
-    }
-
-    [Fact]
-    public void RemoveLast_RemovesLastElementSuccessfully()
-    {
-        // Arrange
-        DynamicArray<int> actual = new(1, 2, 3);
-        DynamicArray<int> expected = new(1, 2);;
-        // Act
-        actual.RemoveLast();
-        // Assert
-        for (int i = 0; i < expected.Length; i++)
-        {
-            int expectedIndex = expected[i];
-            int actualIndex = actual[i];
-
-            Assert.True(expectedIndex == actualIndex,
-                $"Expected: '{expectedIndex}', Actual: '{actualIndex}' at offset {i}."
-            );
-        }
+        Assert.Throws<IndexOutOfRangeException>(() => arr.RemoveAt(items.Length));
     }
 }
