@@ -8,6 +8,8 @@ public class StackTests
     // TODO dry this.
     public static IEnumerable<object[]> GetNumbers()
     {
+        yield return new object[] { 1 };
+        yield return new object[] { 1, 2 };
         yield return new object[] { 1, 2, 3 };
         yield return new object[] { 3, 2, 1 };
         yield return new object[] { 1, 3, 2 };

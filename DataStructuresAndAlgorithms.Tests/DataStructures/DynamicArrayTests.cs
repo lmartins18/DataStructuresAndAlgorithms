@@ -3,11 +3,12 @@ namespace DataStructuresAndAlgorithms.Tests.DataStructures;
 public class DynamicArrayTests
 {
     // Data
+    
     public static IEnumerable<object[]> GetNumbers()
     {
+        yield return new object[] { 1 };
+        yield return new object[] { 1, 2 };
         yield return new object[] { 1, 2, 3 };
-        yield return new object[] { 3, 2, 1 };
-        yield return new object[] { 1, 3, 2 };
         yield return new object[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     }
 
@@ -34,7 +35,7 @@ public class DynamicArrayTests
         // Arrange
         DynamicArray<int> arr = new(length);
         // Assert
-        Assert.Equal(length, arr.Length);
+        Assert.Equal(length, arr.Capacity);
     }
 
     [Theory]
@@ -44,7 +45,7 @@ public class DynamicArrayTests
         // Arrange
         DynamicArray<object> arr = new(items);
         // Assert
-        Assert.Equal(items.Length, arr.Length);
+        Assert.Equal(items.Length, arr.Capacity);
     }
 
     [Theory]
@@ -53,9 +54,10 @@ public class DynamicArrayTests
     {
         // Arrange
         DynamicArray<object> arr = new(items);
-        int index = items.Length - 1;
+        int index = (items.Length > 0) ? items.Length - 1 : 0;
         // Assert
         Assert.Equal(items[index], arr[index]);
+        
     }
 
     [Theory]
@@ -74,7 +76,7 @@ public class DynamicArrayTests
     {
         // Arrange
         DynamicArray<object> arr = new(items);
-        object item = items[1];
+        object item = arr.Count > 0 ? items[0] : default!;
         // Act
         arr.Add(item);
         // Assert
@@ -83,19 +85,19 @@ public class DynamicArrayTests
 
     [Theory]
     [MemberData(nameof(GetNumbers))]
-    public void Add_NewItem_UpdatesLengthCorrectly(params object[] items)
+    public void Add_NewItem_UpdatesCountCorrectly(params object[] items)
     {
         // Arrange
         DynamicArray<object> arr = new(items);
-        object item = items[1];
-        int initialLength = arr.Length;
+        object item = items[^1];
+        int initialLength = arr.Count;
         int expectedLength = initialLength + 1;
         // Act
         arr.Add(item);
         // Assert
-        Assert.Equal(expectedLength, arr.Length);
+        Assert.Equal(expectedLength, arr.Count);
     }
-
+    
     [Theory]
     [MemberData(nameof(GetNumbers))]
     public void InsertAt_ValidIndex_InsertsCorrectly(params object[] items)
@@ -108,6 +110,7 @@ public class DynamicArrayTests
             object item = 10; // Item to insert
             DynamicArray<object> actual = new(items);
             List<object> expected = new(items);
+            List<object> test = new(10);
 
             // Act
             expected.Insert(index, item);
@@ -143,12 +146,12 @@ public class DynamicArrayTests
     {
         // Arrange
         DynamicArray<object> arr = new(items);
-        int initialLength = arr.Length;
+        int initialLength = arr.Count;
         int expectedLength = initialLength - 1;
         // Act
         arr.RemoveAt(expectedLength);
         // Assert
-        Assert.Equal(expectedLength, arr.Length);
+        Assert.Equal(expectedLength, arr.Count);
     }
 
 
@@ -162,20 +165,16 @@ public class DynamicArrayTests
         {
             // Arrange
             DynamicArray<object> actual = new(items);
-            DynamicArray<object> expected = new(items.Length - 1);
-
-            // Add all elements except the one that is going to be removed.
-            for (int i = 0, j = 0; i < items.Length; i++)
-            {
-                if (i != index)
-                {
-                    expected[j++] = items[i];
-                }
-            }
-
+            List<object> expected = new(items);
+            // Skip empty arrays.
+            if (index >= expected.Count) return; 
             // Act
             actual.RemoveAt(index);
-            Assert.Equivalent(expected, actual);
+            expected.RemoveAt(index);
+            for (int i = 0; i < expected.Count; i++)
+            { 
+                Assert.Equal(expected[i], actual[i]);
+            }
         }
     }
 

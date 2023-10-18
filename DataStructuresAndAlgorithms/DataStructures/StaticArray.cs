@@ -7,18 +7,24 @@ namespace DataStructuresAndAlgorithms.DataStructures;
 public class StaticArray<T>
 {
     private readonly T[] _items;
-    public int Length { get; private set; }
+    /// <summary>
+    /// The length/size of the array.
+    /// </summary>
+    public int Capacity { get; }
 
     public StaticArray(params T[] items)
     {
         _items = items;
-        Length = _items.Length;
+        Capacity = _items.Length;
     }
 
-    public StaticArray(int length)
+    public StaticArray(int capacity)
     {
-        _items = new T[length];
-        Length = _items.Length;
+        if (capacity < 0)
+            throw new ArgumentOutOfRangeException("Invalid length");
+
+        _items = capacity == 0 ? Array.Empty<T>() : new T[capacity];
+        Capacity = capacity;
     }
 
     // Indexer
@@ -26,10 +32,16 @@ public class StaticArray<T>
     {
         get
         {
-            if (index > Length - 1) throw new IndexOutOfRangeException();
+            if (index > Capacity - 1) throw new IndexOutOfRangeException();
+            
             return _items[index];
         }
-        set => _items[index] = value;
+        set
+        {
+            if (index > Capacity - 1) throw new IndexOutOfRangeException();
+            
+            _items[index] = value;
+        }
     }
 
     /// <summary>
@@ -38,6 +50,7 @@ public class StaticArray<T>
     /// </summary>
     public void InsertAt(T item, int index)
     {
+        if (index >= _items.Length) throw new IndexOutOfRangeException();
         // If inserting at end, change and leave.
         if (index == _items.Length - 1)
         {
@@ -54,31 +67,17 @@ public class StaticArray<T>
         // And change it now.
         _items[index] = item;
 
-        // If array was already changed before, update Length.
-        if (Length != _items.Length)
-        {
-            Length++;
-        }
     }
 
     public void RemoveAt(int index)
     {
-        if (index >= _items.Length)
-            throw new IndexOutOfRangeException();
-
+        if (index >= _items.Length) throw new IndexOutOfRangeException();
         // Shift all first.
         for (int i = index; i < _items.Length - 1; i++)
         {
             _items[i] = _items[i + 1];
         }
-
-        // Now update count.
-        Length--;
-
-        // Now clean the rest of the array.
-        for (int j = Length; j < _items.Length; j++)
-        {
-            _items[j] = default!;
-        }
+        // Now remove the last element. since all was already shifted..
+        _items[^1] = default!;
     }
 }

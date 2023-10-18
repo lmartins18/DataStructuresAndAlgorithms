@@ -9,7 +9,7 @@ public class Stack<T>
     public Stack(params T[] items)
     {
         _items = new DynamicArray<T>(items);
-        Length = _items.Length;
+        Length = _items.Capacity;
     }
 
     /// <summary>

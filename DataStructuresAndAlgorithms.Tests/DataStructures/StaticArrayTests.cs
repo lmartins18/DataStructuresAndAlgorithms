@@ -6,6 +6,8 @@ public class StaticArrayTests
     // TODO maybe dry this in the future.
     public static IEnumerable<object[]> GetNumbers()
     {
+        yield return new object[] { 1 };
+        yield return new object[] { 1, 2 };
         yield return new object[] { 1, 2, 3 };
         yield return new object[] { 3, 2, 1 };
         yield return new object[] { 1, 3, 2 };
@@ -30,22 +32,22 @@ public class StaticArrayTests
     [InlineData(10)]
     [InlineData(100)]
     [InlineData(1000)]
-    public void Constructor_WithLength_InitializesWithRightLength(int length)
+    public void Constructor_WithLength_InitializesWithRightCapacity(int length)
     {
         // Arrange
         StaticArray<int> arr = new(length);
         // Assert
-        Assert.Equal(length, arr.Length);
+        Assert.Equal(length, arr.Capacity);
     }
 
     [Theory]
     [MemberData(nameof(GetNumbers))]
-    public void Length_AfterConstructor_SetsCorrectly(params object[] items)
+    public void Capacity_AfterConstructor_IsCorrect(params object[] items)
     {
         // Arrange
         StaticArray<object> arr = new(items);
         // Assert
-        Assert.Equal(items.Length, arr.Length);
+        Assert.Equal(items.Length, arr.Capacity);
     }
 
     [Theory]
@@ -54,7 +56,8 @@ public class StaticArrayTests
     {
         // Arrange
         StaticArray<object> arr = new(items);
-        int index = items.Length - 1;
+        int index = 0;
+        // Act
         // Assert
         Assert.Equal(items[index], arr[index]);
     }
@@ -71,23 +74,10 @@ public class StaticArrayTests
 
     [Theory]
     [MemberData(nameof(GetNumbers))]
-    public void Indexer_OutOfBoundsAfterRemovingElement_ThrowsOutOfBoundsException(params object[] items)
-    {
-        // Arrange
-        StaticArray<object> arr = new(items);
-        int index = arr.Length - 1;
-        // Act
-        arr.RemoveAt(index);
-        // Assert
-        Assert.Throws<IndexOutOfRangeException>(() => arr[index]);
-    }
-
-    [Theory]
-    [MemberData(nameof(GetNumbers))]
     public void InsertAt_ValidIndex_InsertsCorrectly(params object[] items)
     {
         // Arrange
-        int index = 1;
+        int index = items.Length - 1;
         object item = items[^1];
         StaticArray<object> actual = new(items);
         StaticArray<object> expected = new(items);
@@ -95,7 +85,7 @@ public class StaticArrayTests
         expected[index] = item;
         actual.InsertAt(item, index);
         // Assert
-        for (int i = 0; i < expected.Length; i++)
+        for (int i = 0; i < expected.Capacity; i++)
         {
             object expectedIndex = expected[i];
             object actualIndex = actual[i];
@@ -117,44 +107,52 @@ public class StaticArrayTests
         Assert.Throws<IndexOutOfRangeException>(() => arr.InsertAt(item, length));
     }
 
-    [Theory]
-    [MemberData(nameof(GetNumbers))]
-    public void RemoveAt_ValidIndex_SetsLengthCorrectly(params object[] items)
+    [Fact]
+    public void InsertAt_ValidItem_KeepsObjectReference()
     {
         // Arrange
-        StaticArray<object> arr = new(items);
-        int initialLength = arr.Length;
-        int expectedLength = initialLength - 1;
+        int length = 10;
+        int item = 20;
+        StaticArray<int> arr = new(length);
+        int expected = arr.GetHashCode();
+        int actual = 0;
         // Act
-        arr.RemoveAt(expectedLength);
+        arr.InsertAt(item, 0);
+        actual = arr.GetHashCode();
         // Assert
-        Assert.Equal(expectedLength, arr.Length);
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void InsertAt_EmptyArray_ThrowsOutOfBoundsException()
+    {
+        // Arrange
+        StaticArray<int> arr = new();
+        // Act & Assert
+        Assert.Throws<IndexOutOfRangeException>(() => arr.InsertAt(1, 0));
     }
 
     [Theory]
     [MemberData(nameof(GetNumbers))]
     public void RemoveAt_ValidIndex_RemovesItemSuccessfully(params object[] items)
     {
+        // This is only for substantial arrays, skip empty/
         // Try at first, 'middle', and last indexes.
         int[] indexes = { 0, 1, items.Length - 1 };
-        foreach(var index in indexes)
+        foreach (var index in indexes)
         {
             // Arrange
             StaticArray<object> actual = new(items);
-            StaticArray<object> expected = new(items.Length - 1);
-            
-            // Add all elements except the one that is going to be removed.
-            for (int i = 0, j = 0; i < items.Length; i++)
-            {
-                if (i != index)
-                {
-                    expected[j++] = items[i];
-                }
-            }
-
+            List<object> expected = new(items);
+            // Skip empty arrays.
+            if (index >= expected.Count) return;  
             // Act
+            expected.RemoveAt(index);
             actual.RemoveAt(index);
-            Assert.Equivalent(expected, actual);
+            for (int i = 0; i < expected.Count; i++)
+            {
+                Assert.Equal(expected[i], actual[i]);
+            }
         }
     }
 
@@ -165,6 +163,16 @@ public class StaticArrayTests
         // Arrange
         StaticArray<object> arr = new(items);
         // Act && Assert
-        Assert.Throws<IndexOutOfRangeException>(() => arr.RemoveAt(items.Length));
+        Assert.Throws<IndexOutOfRangeException>(() => arr.RemoveAt(arr.Capacity));
+    }
+
+    [Fact]
+    public void RemoveAt_EmptyArray_ThrowsOutOfBoundsException()
+    {
+        // Arrange
+        StaticArray<object> arr = new();
+        // Act & Assert
+        Assert.Throws<IndexOutOfRangeException>(() => arr.RemoveAt(0));
+        
     }
 }

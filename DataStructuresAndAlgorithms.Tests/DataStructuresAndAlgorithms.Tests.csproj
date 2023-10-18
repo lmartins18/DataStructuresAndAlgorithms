@@ -25,10 +25,19 @@
 
     <ItemGroup>
       <Compile Remove="UnitTest1.cs" />
+      <Compile Remove="Common\**" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\DataStructuresAndAlgorithms\DataStructuresAndAlgorithms.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Common\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Common\**" />
     </ItemGroup>
 
 </Project>
