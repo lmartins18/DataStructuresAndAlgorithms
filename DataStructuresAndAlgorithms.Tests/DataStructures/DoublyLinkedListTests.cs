@@ -2,7 +2,7 @@ namespace DataStructuresAndAlgorithms.Tests.DataStructures;
 
 using DataStructuresAndAlgorithms.DataStructures;
 
-public class LinkedListTests
+public class DoublyLinkedListTests
 {
     // Data
     public static IEnumerable<object[]> GetNumbers()
@@ -18,7 +18,7 @@ public class LinkedListTests
     public void Constructor_ValidData_ConstructsCorrectly(params object[] items)
     {
         // Arrange
-        LinkedList<object> actual = new LinkedList<object>(items);
+        DoublyLinkedList<object> actual = new DoublyLinkedList<object>(items);
         // Assert
         var currentNode = actual.Head; // Start from the first node
 
@@ -34,13 +34,34 @@ public class LinkedListTests
 
         Assert.Null(currentNode); // Ensure that we have reached the end of the list
     }
+    [Theory]
+    [MemberData(nameof(GetNumbers))]
+    public void Constructor_ValidData_PrevWorksCorrectly(params object[] items)
+    {
+        // Arrange
+        DoublyLinkedList<object> actual = new DoublyLinkedList<object>(items);
+        // Assert
+        var currentNode = actual.Tail; // Start from the first node
+
+        for (var i = items.Length - 1; i >= 0; i--)
+        {
+            Assert.NotNull(currentNode); // Ensure the node exists
+
+            var item = items[i];
+            Assert.Equal(item, currentNode.Value);
+
+            currentNode = currentNode.Prev; // Move to the next node
+        }
+
+        Assert.Null(currentNode); // Ensure that we have reached the end of the list
+    }
 
     [Theory]
     [MemberData(nameof(GetNumbers))]
     public void Constructor_ValidData_SetsLengthCorrectly(params object[] items)
     {
         // Arrange
-        LinkedList<object> arr = new LinkedList<object>(items);
+        DoublyLinkedList<object> arr = new DoublyLinkedList<object>(items);
         // Act & Assert
         Assert.Equal(arr.Length, items.Length);
     }
@@ -48,15 +69,15 @@ public class LinkedListTests
     [Theory]
     [MemberData(nameof(GetNumbers))]
     public void Indexer_Get_GetsCorrectly(params object[] items)
-    {
-        int[] indexes = { 0, 1, items.Length - 1 };
-        foreach (var index in indexes)
+    { 
+        for(int i = 0; i < items.Length; i++)
         {
+            int index = i;
             // Skip empty arrays.
             if (index >= items.Count()) return;
             // For some reason range index like ^1 cant be used..
             // Arrange
-            LinkedList<object> arr = new(items);
+            DoublyLinkedList<object> arr = new(items);
             object expected = items[index];
             object actual = arr[index];
             // Assert
@@ -70,7 +91,7 @@ public class LinkedListTests
     {
         // For some reason range index like ^1 cant be used..
         // Arrange
-        LinkedList<object> arr = new(items);
+        DoublyLinkedList<object> arr = new(items);
         object expected = items[0];
         object actual = default;
         // Act
@@ -84,7 +105,7 @@ public class LinkedListTests
     public void Indexer_InvalidIndex_ThrowsOutOfBoundsException()
     {
         // Arrange
-        LinkedList<object> arr = new();
+        DoublyLinkedList<object> arr = new();
         // Act & Assert
         Assert.Throws<IndexOutOfRangeException>(() => arr[10]);
     }
@@ -93,14 +114,14 @@ public class LinkedListTests
     [MemberData(nameof(GetNumbers))]
     public void InsertAt_ValidIndex_InsertsCorrectly(params object[] items)
     {
-        int[] indexes = { 0, 1, items.Length - 1 };
-        foreach (var index in indexes)
+        for(int i = 0; i < items.Length; i++)
         {
+            int index = i;
             // Skip empty arrays.
             if (index >= items.Count()) return;
             // Arrange
-            LinkedList<object> arr = new(items);
-            object expected = items[0];
+            DoublyLinkedList<object> arr = new(items);
+            object expected = items[index];
             object actual = default;
             // Act
             arr.InsertAt(expected, index);
@@ -114,7 +135,7 @@ public class LinkedListTests
     public void InsertAt_InvalidIndex_ThrowsOutOfBoundsException()
     {
         // Arrange
-        LinkedList<object> arr = new();
+        DoublyLinkedList<object> arr = new();
         // Act & Assert
         Assert.Throws<IndexOutOfRangeException>(() => arr.InsertAt(1, 10));
     }
@@ -124,7 +145,7 @@ public class LinkedListTests
     {
         // Arrange
         int item = 0;
-        LinkedList<int> arr = new(1);
+        DoublyLinkedList<int> arr = new(1);
         // Act
         arr.InsertAt(item, 0);
         // Assert
@@ -136,7 +157,7 @@ public class LinkedListTests
     {
         // Arrange
         int item = 2;
-        LinkedList<int> arr = new(0, 1);
+        DoublyLinkedList<int> arr = new(0, 1);
         // Act
         arr.InsertAt(item, 1);
         // Assert
@@ -153,7 +174,7 @@ public class LinkedListTests
         foreach (var index in indexes)
         {
             // Arrange
-            LinkedList<object> actual = new(items);
+            DoublyLinkedList<object> actual = new(items);
             List<object> expected = new(items);
             // Skip empty arrays.
             if (index >= expected.Count) return;
@@ -172,7 +193,7 @@ public class LinkedListTests
     {
         // Arrange
         int item = 2;
-        LinkedList<int> arr = new(1);
+        DoublyLinkedList<int> arr = new(1);
         // Act
         arr.AddLast(item);
         // Assert
@@ -185,7 +206,7 @@ public class LinkedListTests
     {
         // Arrange
         object item = items[0];
-        LinkedList<object> actual = new(items);
+        DoublyLinkedList<object> actual = new(items);
         List<object> expected = new(items);
         // Act
         actual.AddLast(item);
@@ -203,7 +224,7 @@ public class LinkedListTests
     {
         // Arrange
         var item = items[0];
-        LinkedList<object> arr = new(items);
+        DoublyLinkedList<object> arr = new(items);
         // Act
         arr.AddFist(item);
         // Assert
@@ -215,7 +236,7 @@ public class LinkedListTests
     {
         // Arrange
         int[] items = { 1, 2 };
-        LinkedList<int> arr = new(items);
+        DoublyLinkedList<int> arr = new(items);
         // Act
         arr.RemoveFirst();
         // Assert
@@ -226,7 +247,7 @@ public class LinkedListTests
     {
         // Arrange
         int[] items = { 1, 2 };
-        LinkedList<int> arr = new(items);
+        DoublyLinkedList<int> arr = new(items);
         // Act
         arr.RemoveFirst();
         // Assert
@@ -238,7 +259,7 @@ public class LinkedListTests
     public void RemoveLast_UpdatesTailCorrectly(params object[] items)
     {
         // Arrange
-        LinkedList<object> arr = new(items);
+        DoublyLinkedList<object> arr = new(items);
         // Act
         arr.RemoveLast();
         // Assert
@@ -250,7 +271,7 @@ public class LinkedListTests
     public void RemoveLast_UpdatesLastItemCorrectly(params object[] items)
     {
         // Arrange
-        LinkedList<object> arr = new(items);
+        DoublyLinkedList<object> arr = new(items);
         // Act
         arr.RemoveLast();
         // Assert
@@ -263,7 +284,7 @@ public class LinkedListTests
     public void RemoveFirst_RemovesFirstItemSuccessfully(params object[] items)
     {
         // Arrange
-        LinkedList<object> actual = new(items);
+        DoublyLinkedList<object> actual = new(items);
         List<object> expected = new(items);
         // Act
         actual.RemoveFirst();
@@ -278,7 +299,7 @@ public class LinkedListTests
     public void RemoveFirst_UpdatesHead(params object[] items)
     {
         // Arrange
-        LinkedList<object> arr = new(items);
+        DoublyLinkedList<object> arr = new(items);
         // Act
         arr.RemoveFirst();
         // Assert

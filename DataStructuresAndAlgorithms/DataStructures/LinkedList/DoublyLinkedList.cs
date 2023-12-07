@@ -1,38 +1,51 @@
-using System.Globalization;
+namespace DataStructuresAndAlgorithms.Tests.DataStructures;
 
-namespace DataStructuresAndAlgorithms.DataStructures;
-
-public class LinkedList<T>
+public class DoublyLinkedList<T>
 {
-    public LinkedListNode<T> Head { get; private set; }
-    public LinkedListNode<T> Tail { get; private set; }
+    public DoublyLinkedListNode<T> Head { get; private set; }
+    public DoublyLinkedListNode<T> Tail { get; private set; }
     public int Length { get; private set; }
 
-    public sealed class LinkedListNode<T>
+    public sealed class DoublyLinkedListNode<T>
     {
         public T Value { get; set; }
-        public LinkedListNode<T>? Next { get; set; } = null;
+        public DoublyLinkedListNode<T>? Prev { get; set; } = null;
+        public DoublyLinkedListNode<T>? Next { get; set; } = null;
 
-        public LinkedListNode(T value)
+        public DoublyLinkedListNode(T value)
         {
             Value = value;
+            Prev = null;
+            Next = null;
+        }
+
+        public DoublyLinkedListNode()
+        {
+            Value = default!;
+            Prev = null;
             Next = null;
         }
     }
 
-    public LinkedList()
+    public DoublyLinkedList()
     {
         Head = null!;
         Tail = null!;
     }
 
-    public LinkedList(params T[] items)
+    public DoublyLinkedList(params T[] items)
     {
-        Head ??= new LinkedListNode<T>(items[0]);
+        Head ??= new DoublyLinkedListNode<T>(items[0]);
         Tail = Head;
+        Tail.Prev = Head;
+        Head.Prev = null;
         for (int i = 1; i < items.Length; i++)
         {
-            var item = new LinkedListNode<T>(items[i]);
+            DoublyLinkedListNode<T> item = new()
+            {
+                Value = items[i],
+                Prev = Tail
+            };
             Tail.Next = item;
             Tail = item;
         }
@@ -47,6 +60,7 @@ public class LinkedList<T>
         {
             if (index >= Length) throw new IndexOutOfRangeException();
             var value = this.Head;
+            // TODO make this more efficient, if index > half, go backwards.
             for (int i = 0; i < index; i++)
             {
                 value = value.Next;
@@ -71,32 +85,37 @@ public class LinkedList<T>
     public void InsertAt(T item, int index)
     {
         if (index >= Length) throw new IndexOutOfRangeException();
-        LinkedListNode<T> old = null;
-        var newNode = new LinkedListNode<T>(item);
+        DoublyLinkedListNode<T> oldNode = null;
+        var newNode = new DoublyLinkedListNode<T>(item);
         // If inserting at start, change and leave.
         if (index == 0)
         {
-            old = Head;
+            oldNode = Head;
             Head = newNode;
-            Head.Next = old;
+            Head.Next = oldNode;
+            oldNode.Prev = newNode;
         }
         else
         {
-            old = Head;
+            oldNode = Head;
             for (int i = 0; i < index - 1; i++)
             {
-                old = old.Next;
+                oldNode = oldNode.Next;
             }
 
-            newNode = new LinkedListNode<T>(item);
-            newNode.Next = old;
-            old.Next = newNode;
+            newNode = new DoublyLinkedListNode<T>()
+            {
+                Value = item,
+                Next = oldNode,
+                Prev = oldNode.Prev
+            };
+            oldNode.Prev = newNode;
         }
 
         // If added at end, update tail.
         if (index == Length - 1)
         {
-            Tail = newNode;
+            AddLast(item);
         }
 
         Length++;
@@ -105,8 +124,12 @@ public class LinkedList<T>
     // Add
     public void AddLast(T item)
     {
-        LinkedListNode<T> newItem = new(item);
-        newItem.Next = Tail;
+        DoublyLinkedListNode<T> newItem = new()
+        {
+            Value = item,
+            Next = null,
+            Prev = Tail
+        };
         Tail = newItem;
     }
 
@@ -116,22 +139,15 @@ public class LinkedList<T>
     public void RemoveAt(int index)
     {
         if (index >= Length) throw new IndexOutOfRangeException();
-        LinkedListNode<T> node = null!;
+        DoublyLinkedListNode<T> node = null!;
         // Check if removing first element.
         if (index == 0)
         {
-            // Check if removing last element in the list.
-            if (Head.Next is not null)
-            {
-                node = Head.Next;
-                Head = node;
-            }
-            else
-            {
-                // Set list to empty.
-                Head = null!;
-                Tail = null!;
-            }
+            RemoveFirst();
+        }
+        else if (index == Length - 1) // End
+        {
+            RemoveLast();
         }
         else
         {
@@ -144,6 +160,7 @@ public class LinkedList<T>
 
             // If removing last element, set its next to null.
             node.Next = (node.Next == Tail) ? null : node.Next.Next;
+            Length--;
         }
 
         // If now, the element is the last, update tail.
@@ -152,17 +169,22 @@ public class LinkedList<T>
             Tail = node;
         }
 
-        Length--;
     }
 
     public void RemoveLast()
     {
-        RemoveAt(Length - 1);
+        if (Length == 0) 
+            throw new IndexOutOfRangeException("List is empty.");
+
+        Tail = Tail.Prev;
+        Length--;
     }
 
     public void RemoveFirst()
     {
-        Head = Head.Next!;
+        if (Length == 0) throw new IndexOutOfRangeException("List is empty.");
+
+        Head = Head.Next;
         if (Head is null)
         {
             Tail = null;
